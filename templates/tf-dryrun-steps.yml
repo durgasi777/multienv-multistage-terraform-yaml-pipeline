@@ -1,5 +1,9 @@
 steps:
-  - checkout: none
+  - task: Bash@3
+    inputs:
+      workingDirectory: '$(tfExecutionDir)'
+      targetType: 'inline'
+      script: echo $PWD && ls -la && cat dev.tfvars
   - task: Cache@2
     displayName: 'Register TF cache'
     inputs:
