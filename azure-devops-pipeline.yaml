@@ -3,11 +3,11 @@ trigger:
   
 variables:
   - name: PROJECT_PATH
-    value: terraform
+    value: Terraform
   - name: tfComponent
-    value: cluster
+    value: Dev
   - name: tfExecutionDir
-    value: '$(PROJECT_PATH)/src/$(tfComponent)'
+    value: '$(PROJECT_PATH)/$(tfComponent)'
   - name: terraformVersion
     value: 0.12.25
   - name: serviceConnectionName
@@ -15,13 +15,13 @@ variables:
   - name: backendAzureRmResourceGroupName
     value: rg-terraformstate
   - name: backendAzureRmStorageAccountName
-    value: terraformnsa
+    value: krishterrastatestorage
   - name: backendAzureRmContainerName
-    value: tfstate
+    value: terraformdemo
   - name: backendAzureRmKey
     value: 'terraform.tfstate'
   - name: tfVarFileName
-    value: "../environment/dev.tfvars"
+    value: '$(PROJECT_PATH)/tfvars/dev.tfvars'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -35,8 +35,7 @@ stages:
         displayName: 'Register TF cache'
         inputs:
           key: terraform | $(Agent.OS) | "$(Build.BuildNumber)" | $(Build.SourceVersion) | $(tfComponent) | "$(tfVarFileName)"
-          path: $(tfExecutionDir)
-      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
+          path: $(tfExecutionDir)- task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
         displayName: 'Install Terraform'
         inputs:
           terraformVersion: '$(terraformVersion)'
@@ -45,7 +44,7 @@ stages:
         inputs:
           provider: 'azurerm'
           command: 'init'
-          workingDirectory: '$(tfExecutionDir)'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/$(tfExecutionDir)'
           backendServiceArm: '$(serviceConnectionName)'
           backendAzureRmResourceGroupName: '$(backendAzureRmResourceGroupName)'
           backendAzureRmStorageAccountName: '$(backendAzureRmStorageAccountName)'
@@ -56,8 +55,8 @@ stages:
         inputs:
           provider: 'azurerm'
           command: 'plan'
-          commandOptions: '-var-file=../zone/sandboxuks1.tfvars -out=${BUILD_BUILDNUMBER}.tfplan'
-          workingDirectory: '$(tfExecutionDir)'
+          commandOptions: '-var-file=$(tfVarFileName) -out=${BUILD_BUILDNUMBER}.tfplan'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/$(tfExecutionDir)'
           environmentServiceNameAzureRM: '$(serviceConnectionName)'
 - stage:
   displayName: 'Terraform Apply'
@@ -76,7 +75,7 @@ stages:
             displayName: 'Get Cache for TF Artifact'
             inputs:
               key: terraform | $(Agent.OS) | "$(Build.BuildNumber)" | $(Build.SourceVersion) | $(tfComponent) | "$(tfVarFileName)"
-              path: $(tfExecutionDir)
+              path: '$(System.DefaultWorkingDirectory)/$(tfExecutionDir)'
           - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
             displayName: 'Install Terraform'
             inputs:
@@ -87,5 +86,5 @@ stages:
               provider: 'azurerm'
               command: 'apply'
               commandOptions: '${BUILD_BUILDNUMBER}.tfplan' # pass plan file to terraform apply
-              workingDirectory: '$(tfExecutionDir)'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/$(tfExecutionDir)'
               environmentServiceNameAzureRM: '$(serviceConnectionName)'
