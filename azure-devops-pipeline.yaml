@@ -21,7 +21,7 @@ variables:
   - name: backendAzureRmKey
     value: 'terraform.tfstate'
   - name: tfVarFileName
-    value: '$(PROJECT_PATH)/tfvars/dev.tfvars'
+    value: '$(tfExecutionDir)/dev.tfvars'
 
 pool:
   vmImage: 'ubuntu-latest'
