@@ -36,7 +36,7 @@ stages:
         inputs:
           key: terraform | $(Agent.OS) | "$(Build.BuildNumber)" | $(Build.SourceVersion) | $(tfComponent) | "$(tfVarFileName)"
           path: $(tfExecutionDir)
-      - task: TerraformInstaller@0
+      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller
         displayName: 'Install Terraform'
         inputs:
           terraformVersion: '$(terraformVersion)'
@@ -77,7 +77,7 @@ stages:
             inputs:
               key: terraform | $(Agent.OS) | "$(Build.BuildNumber)" | $(Build.SourceVersion) | $(tfComponent) | "$(tfVarFileName)"
               path: $(tfExecutionDir)
-          - task: TerraformInstaller@0
+          - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller
             displayName: 'Install Terraform'
             inputs:
               terraformVersion: '$(terraformVersion)'
