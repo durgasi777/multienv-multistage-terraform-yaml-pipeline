@@ -34,9 +34,9 @@ stages:
 
       - task: Bash@3
         inputs:
-          workingDirectory: '$(tfExecutionDir)'
+          workingDirectory: '$(PROJECT_PATH)/tfvars'
           targetType: 'inline'
-          script: echo $PWD && ls -la
+          script: echo $PWD && cat dev.tfvars
       - task: Cache@2
         displayName: 'Register TF cache'
         inputs:
