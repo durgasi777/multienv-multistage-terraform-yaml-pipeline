@@ -38,7 +38,7 @@ stages:
 - stage: TerraformPlan
   displayName: 'Terraform Plan'
   jobs:
-  - deployment : Terraform_Init_&Plan
+  - deployment : Terraform_Init_And_Plan
     displayName: Terraform Initialize &Plan
     continueOnError: 'false'
     environment: ${{ parameters.deployTo }}-Design-Studio-AppServicePlan
