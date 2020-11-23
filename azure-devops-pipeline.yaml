@@ -34,8 +34,9 @@ stages:
 
       - task: Bash@3
         inputs:
+          workingDirectory: '$(System.DefaultWorkingDirectory)/$(tfExecutionDir)'
           targetType: 'inline'
-          script: echo $PWD
+          script: echo $PWD && ls -la
       - task: Cache@2
         displayName: 'Register TF cache'
         inputs:
