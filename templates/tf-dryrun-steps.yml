@@ -1,0 +1,30 @@
+steps:
+  - checkout: none
+  - task: Cache@2
+    displayName: 'Register TF cache'
+    inputs:
+      key: terraform | $(Agent.OS) | "$(Build.BuildNumber)" | $(Build.SourceVersion) | $(tfComponent) | "$(tfVarFileName)"
+      path: $(tfExecutionDir)
+  - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
+    displayName: 'Install Terraform'
+    inputs:
+      terraformVersion: '$(terraformVersion)'
+  - task: TerraformTaskV1@0
+    displayName: 'Terraform Init'
+    inputs:
+      provider: 'azurerm'
+      command: 'init'
+      workingDirectory: '$(tfExecutionDir)'
+      backendServiceArm: '$(serviceConnectionName)'
+      backendAzureRmResourceGroupName: '$(backendAzureRmResourceGroupName)'
+      backendAzureRmStorageAccountName: '$(backendAzureRmStorageAccountName)'
+      backendAzureRmContainerName: '$(backendAzureRmContainerName)'
+      backendAzureRmKey: '$(backendAzureRmKey)'
+  - task: TerraformTaskV1@0
+    displayName: 'Terraform Destroy'
+    inputs:
+      provider: 'azurerm'
+      command: 'plan'
+      commandOptions: -destroy
+      workingDirectory: '$(tfExecutionDir)'
+      environmentServiceNameAzureRM: '$(serviceConnectionName)'
