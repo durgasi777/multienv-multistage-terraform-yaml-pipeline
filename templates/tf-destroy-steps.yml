@@ -14,6 +14,6 @@ steps:
     inputs:
       provider: 'azurerm'
       command: 'destroy'
-      commandOptions: -auto-approve
+      commandOptions: '${BUILD_BUILDNUMBER}.tfdestroy' # pass plan file to terraform destroy
       workingDirectory: '$(tfExecutionDir)'
       environmentServiceNameAzureRM: '$(serviceConnectionName)'
