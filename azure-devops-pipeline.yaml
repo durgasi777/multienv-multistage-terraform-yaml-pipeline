@@ -9,7 +9,7 @@ variables:
   - name: tfExecutionDir
     value: '$(PROJECT_PATH)/$(tfComponent)'
   - name: terraformVersion
-    value: 0.12.25
+    value: 0.13.5
   - name: serviceConnectionName
     value: kkazureserviceconn
   - name: backendAzureRmResourceGroupName
