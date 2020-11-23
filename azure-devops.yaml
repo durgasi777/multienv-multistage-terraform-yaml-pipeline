@@ -1,10 +1,10 @@
-# Terraform release pipeline for Mezz-Design Studio Environments
+# Terraform release pipeline for Mezz-Design Studio AppService Environments
 name: $(Year:yyyy).$(Date:MMdd).$(rev:rr)-$(Build.SourceBranchName)
 
 #Run time parameters
 parameters:
 - name: deployTo
-  displayName: Select the Mezz-Design Studio-Environment To make Terraform update
+  displayName: Select the Mezz-Design Studio-Environment To run Terraform update
   type: string
   default: kktest
   values:
@@ -21,52 +21,41 @@ parameters:
 
 # Set variables once
 variables:
-  - name: vmImageName
-    value: ubuntu-latest
-  - name: PROJECT_PATH
-    value: '$(System.DefaultWorkingDirectory)/Terraform'
-  - name: tfComponent
-    value: Dev
-  - name: tfExecutionDir
-    value: '$(PROJECT_PATH)/$(tfComponent)'
-  - name: terraformVersion
-    value: 0.13.5
-  - name: serviceConnectionName
-    value: kkazureserviceconn
-  - name: backendAzureRmResourceGroupName
-    value: rg-terraformstate
-  - name: backendAzureRmStorageAccountName
-    value: krishterrastatestorage
-  - name: backendAzureRmContainerName
-    value: terraformdemo
-  - name: backendAzureRmKey
-    value: 'terraform.tfstate'
-  - name: tfVarFileName
-    value: '$(tfExecutionDir)/dev.tfvars'
+  vmImageName: 'ubuntu-latest'
+  PROJECT_PATH: '$(System.DefaultWorkingDirectory)/Terraform'
+  tfComponent: 'Dev'
+  tfExecutionDir: '$(PROJECT_PATH)/$(tfComponent)'
+  terraformVersion: '0.13.5'
+  serviceConnectionName: 'kkazureserviceconn'
+  backendAzureRmResourceGroupName: 'rg-terraformstate'
+  backendAzureRmStorageAccountName: 'krishterrastatestorage'
+  backendAzureRmContainerName: 'terraformdemo'
+  backendAzureRmKey: 'terraform.tfstate'
+  tfVarFileName: '$(tfExecutionDir)/dev.tfvars'
 
 # Terraform instructions
 stages:
 - stage: TerraformPlan
   displayName: 'Terraform Plan'
   jobs:
-  - deployment : Terraform_Dry_Run
+  - deployment : Terraform_Plan
     displayName: Terraform Initialize &Plan
     continueOnError: 'false'
-    environment: ${{ parameters.deployTo }}-Design-Studio-AppService
+    environment: ${{ parameters.deployTo }}-Design-Studio-AppServicePlan
     pool:
       vmImage: '$(vmImageName)'
-  #Runs If Terraform Plan or Apply
+  # Runs If Terraform Plan or Apply
   - ${{ if ne(parameters.tf_update, 'Destroy') }}:
     - job: Terraform_Plan
       steps:
       - template: templates/tf-plan-steps.yml
-  # Runs Terraform Destroy - DryRun
+  # Runs Terraform Destroy - DryRun Only
   - ${{ if eq(parameters.tf_update, 'Destroy') }}:
-    - job: Terraform_Destroy_DryRun
+    - job: Terraform_Destroy_Plan
       steps:
-      - template: templates/tf-dryrun-steps.yml
+      - template: templates/tf-destroy-plan-steps.yml
 
-#Terraform Actions instructions with Approval checks in ADO
+#Terraform Actions (instructions) with Approval checks in ADO
 - stage: TerraformUpdate
   dependsOn: TerraformPlan
   condition: and(not(failed('TerraformPlan')), ${{ ne(parameters.tf_update, 'Plan') }})
