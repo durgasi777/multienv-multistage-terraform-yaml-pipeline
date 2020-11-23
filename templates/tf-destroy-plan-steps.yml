@@ -24,6 +24,6 @@ steps:
     inputs:
       provider: 'azurerm'
       command: 'plan'
-      commandOptions: -destroy
+      commandOptions: '-destroy -var-file=$(tfVarFileName) -out=${BUILD_BUILDNUMBER}.tfdestroy'
       workingDirectory: '$(tfExecutionDir)'
       environmentServiceNameAzureRM: '$(serviceConnectionName)'
