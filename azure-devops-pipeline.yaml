@@ -56,15 +56,15 @@ stages:
         displayName: 'Terraform Plan'
         inputs:
           provider: 'azurerm'
-          command: 'plan'
+          command: 'destroy'
           commandOptions: '-var-file=$(tfVarFileName) -out=${BUILD_BUILDNUMBER}.tfplan'
           workingDirectory: '$(tfExecutionDir)'
           environmentServiceNameAzureRM: '$(serviceConnectionName)'
 - stage:
-  displayName: 'Terraform Apply'
+  displayName: 'Terraform Destroy'
   jobs:
   - deployment: DeployDev
-    displayName: 'Terraform Apply'
+    displayName: 'Terraform Destroy'
     pool:
       vmImage: 'ubuntu-latest'
     environment: 'terraform'
