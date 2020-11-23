@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "mezz-terraform-state" {
-  name                     = "kkteststorageaccount"
+  name                     = "kk${var.env}storageaccount"
   resource_group_name      = "rg-terraformstate"
   location                 = "centralus"
   account_tier             = "Standard"
