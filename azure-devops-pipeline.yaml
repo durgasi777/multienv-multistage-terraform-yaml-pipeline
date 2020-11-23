@@ -35,7 +35,8 @@ stages:
         displayName: 'Register TF cache'
         inputs:
           key: terraform | $(Agent.OS) | "$(Build.BuildNumber)" | $(Build.SourceVersion) | $(tfComponent) | "$(tfVarFileName)"
-          path: $(tfExecutionDir)- task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
+          path: $(tfExecutionDir)
+      - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
         displayName: 'Install Terraform'
         inputs:
           terraformVersion: '$(terraformVersion)'
