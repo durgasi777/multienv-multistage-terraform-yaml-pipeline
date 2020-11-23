@@ -32,11 +32,6 @@ stages:
   - job: TFPlan
     steps:
 
-      - task: Bash@3
-        inputs:
-          workingDirectory: '$(tfExecutionDir)'
-          targetType: 'inline'
-          script: echo $PWD && ls -la && cat dev.tfvars
       - task: Cache@2
         displayName: 'Register TF cache'
         inputs:
@@ -88,10 +83,10 @@ stages:
             inputs:
               terraformVersion: '$(terraformVersion)'
           - task: TerraformTaskV1@0
-            displayName: 'Terraform Apply'
+            displayName: 'Terraform Destroy'
             inputs:
               provider: 'azurerm'
-              command: 'apply'
+              command: 'destroy'
               commandOptions: '${BUILD_BUILDNUMBER}.tfplan' # pass plan file to terraform apply
               workingDirectory: '$(tfExecutionDir)'
               environmentServiceNameAzureRM: '$(serviceConnectionName)'
