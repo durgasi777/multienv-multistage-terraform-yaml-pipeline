@@ -31,8 +31,8 @@ variables:
   backendAzureRmStorageAccountName: 'krishterrastatestorage'
   backendAzureRmContainerName: $(tfStateFile)'
   backendAzureRmKey: 'terraform.tfstate'
-  tfVarFileName: '$(PROJECT_PATH)/tf-vars/${{ parameters.deployTo }}.tfvars'
-  tfStateFile: 'DesignStudio/${{ parameters.deployTo }}/terraform.tfstate'
+  tfVarFileName: '$(project_path)/tf-vars/${{ parameters.deployTo }}.tfvars'
+  tfStateFile: '$(project_name)/${{ parameters.deployTo }}'
 
 # Terraform instructions
 stages:
