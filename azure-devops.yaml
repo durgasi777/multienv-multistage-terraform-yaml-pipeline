@@ -29,9 +29,10 @@ variables:
   serviceConnectionName: 'kkazureserviceconn'
   backendAzureRmResourceGroupName: 'rg-terraformstate'
   backendAzureRmStorageAccountName: 'krishterrastatestorage'
-  backendAzureRmContainerName: 'terraformdemo'
+  backendAzureRmContainerName: $(tfStateFile)'
   backendAzureRmKey: 'terraform.tfstate'
-  tfVarFileName: '$(tfExecutionDir)/dev.tfvars'
+  tfVarFileName: '$(PROJECT_PATH)/tf-vars/${{ parameters.deployTo }}.tfvars'
+  tfStateFile: 'DesignStudio/${{ parameters.deployTo }}/terraform.tfstate'
 
 # Terraform instructions
 stages:
