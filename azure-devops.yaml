@@ -1,6 +1,8 @@
 # Terraform release pipeline for Mezz-Design Studio AppService Environments
 name: $(Year:yyyy).$(Date:MMdd).$(rev:rr)-$(Build.SourceBranchName)
 
+trigger: none
+
 #Run time parameters
 parameters:
 - name: deployTo
@@ -18,10 +20,23 @@ parameters:
   - Plan
   - Apply
   - Destroy
+- name: Pool_Name
+  displayName: Pool Name
+  type: string
+  default: Azure Pipelines
+  values: 
+  - Azure Pipelines
+  - Default
+- name: Pool_Image
+  displayName: Pool Image
+  type: string
+  default: ubuntu-16.04
+  values:
+  - windows-latest
+  - ubuntu-16.04
 
 # Set variables once
 variables:
-  vmImageName: 'ubuntu-latest'
   PROJECT_PATH: '$(System.DefaultWorkingDirectory)/Terraform'
   tfComponent: 'Dev'
   tfExecutionDir: '$(PROJECT_PATH)/$(tfComponent)'
@@ -43,8 +58,9 @@ stages:
     displayName: Terraform Initialize &Plan
     continueOnError: 'false'
     environment: ${{ parameters.deployTo }}-Design-Studio-AppServicePlan
-    pool:
-      vmImage: '$(vmImageName)'
+    pool: 
+      name: ${{parameters.Pool_Name}}
+      vmImage: ${{parameters.Pool_Image}}
   # Runs If Terraform Plan or Apply
   - ${{ if ne(parameters.tf_update, 'Destroy') }}:
     - job: Terraform_Plan
@@ -65,8 +81,9 @@ stages:
     displayName: Terraform Update
     continueOnError: 'false'
     environment: ${{ parameters.deployTo }}-Design-Studio-AppServiceWithApproval
-    pool:
-      vmImage: '$(vmImageName)'
+    pool: 
+      name: ${{parameters.Pool_Name}}
+      vmImage: ${{parameters.Pool_Image}}
   - ${{ if eq(parameters.tf_update, 'Apply') }}:
     - job: Terraform_Apply
       steps:
